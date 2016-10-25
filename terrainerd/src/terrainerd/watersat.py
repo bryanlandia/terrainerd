@@ -69,6 +69,7 @@ def get_locations(datapath):
 	    # In this case, we'll assume the shapefile only has one record/layer (e.g., the shapefile
 	    # is just for the borders of a single country, etc.).
 	    rec = collection.next()
+	    import pdb; pdb.set_trace()
 	    while rec['properties']['STATE_ABBR'] != 'WA':
 	    	rec = collection.next()
 

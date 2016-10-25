@@ -15,6 +15,8 @@
 * Enter your token at the prompt in your terminal.  This will save your credentials to `$HOME/.config/earthengine/credentials`
 * test authentication is working:
 
+`python`
+
 ```
 # Import the Earth Engine Python Package
 import ee
@@ -26,4 +28,5 @@ ee.Initialize()
 image = ee.Image('srtm90_v4')
 print(image.getInfo())
 ```
+
 
