@@ -5,12 +5,16 @@ of pixels with water color.
 import os
 import optparse
 from io import BytesIO
+import json
+import subprocess
 
 import motionless
 import fiona
 from shapely import geometry
 import pycurl
 from PIL import Image
+from landsat import search
+import requests
 
 
 GOOGLE_WATER_RGB_COLOR = (255,255,0)
@@ -35,6 +39,9 @@ class CommandError(Exception):
 	pass
 
 
+searcher = search.Search()
+
+
 parser = optparse.OptionParser(usage='%prog [options] -k <API key>  -d <data path> [-z <zoom> -o <output file> -m <map type>]')
 parser.add_option('-z', '--zoom', 
 	              action="store", dest="zoom", 
@@ -46,7 +53,10 @@ parser.add_option('-d', '--data',
 	              help="path to an ESRI .shp input file for lat/lng area boundaries.")
 parser.add_option('-o', '--out', action="store", 
 	              dest="out_dir", default="out",
-	              help="path to a file where to store successful water images")
+	              help="path to a folder where to store successful water images")
+parser.add_option('-j', '--jsonout', action="store", 
+	              dest="json_out", default=None,
+	              help="path where to save successful lat/lngs in JSON format")
 parser.add_option('-k', '--apikey', 
 	              action="store", dest="key",
 	     		  help="your Google Maps API key")
@@ -54,9 +64,13 @@ parser.add_option('-m', '--maptype', action="store",
 	              dest="maptype", default="terrain",
 	              type="choice", choices=("terrain", "streetmap", "satellite", "hybrid"),
 	              help="Google map type: 'terrain', 'streetmap', 'satellite', or 'hybrid'. defaults to 'terrain' ")
+parser.add_option('-l', '--locations', 
+	              action="store", dest="locations", 
+	              help="path to an JSON file of point lat,lng pairs to use instead of searching in shapefile")
 
 
-def get_locations(datapath):
+
+def get_locations(options):
 	""" 
 	return a list of lat/lng tuples for map requests based on boundary points from XML datafile,
 	the zoom level, and map tile size desired
@@ -65,12 +79,19 @@ def get_locations(datapath):
 	# we want to get a list of every point for which to query Static Maps API
 	# so this will be a large set of points which must all be contained inside the
 	# shape of the state
-	with fiona.open(datapath) as collection:
+	if options.locations:
+		# use the locations file
+		with open(options.locations, 'r') as locsfile:
+			locations = json.load(locsfile)
+
+		return locations
+
+	with fiona.open(options.datatfile) as collection:
 	    # In this case, we'll assume the shapefile only has one record/layer (e.g., the shapefile
 	    # is just for the borders of a single country, etc.).
 	    rec = collection.next()
-	    import pdb; pdb.set_trace()
-	    while rec['properties']['STATE_ABBR'] != 'WA':
+	    # import pdb; pdb.set_trace()
+	    while rec['properties']['CONTINENT'] != 'South America':
 	    	rec = collection.next()
 
 
@@ -80,10 +101,11 @@ def get_locations(datapath):
 	y = miny
 	locations = []
 	# step should be determined by zoom level and tile size
-	step =  0.05  # dummy
+	step =  1  # dummy
 	while y < maxy:
 		while x < maxx:
 			p = geometry.Point(x,y)
+			print "trying point at:x{},y{}".format(p.x, p.y)
 			if shape.contains(p):
 				locations.append({'lat':y, 'lng':x})
 			x += step
@@ -92,13 +114,36 @@ def get_locations(datapath):
 	print len(locations)
 	return locations
 
+
+def get_loc_landsat_images(point, outpath):
+	"""
+	"""
+	# this should be done with landsat-util py classes/methods instead
+	# of via command line, but for now...
+
+	# subprocess landsat-util
+	# subprocess.call(["landsat", "search", "--lat", str(point['lat']), "--lon", str(point['lng']), "-l", "1", "--start", "2016-01-01"])
+	resp = searcher.search(paths_rows=None, lat=point['lat'], lon=point['lng'], start_date="2016-01-01", end_date=None, cloud_min=None, cloud_max=20.0, limit=10)
+	lres = resp.get('results', [])
+	for res in lres:
+		url = res['thumbnail']
+		fn = url.split("/").pop()
+		r = requests.get(url, stream=True)		
+		path = "img/orig/{}".format(fn)
+        filepath = "{}/{}".format(outpath, fn)
+        with open(filepath, 'wb') as f:
+            for chunk in r:
+                f.write(chunk)
+
+
 def get_gmaps(locations, options):
 
 	for point in locations:
 		gmap = motionless.CenterMap(lat=point['lat'], lon=point['lng'], 
 			                        zoom=int(options.zoom), size_x=100, size_y=100, 
 			                        maptype=options.maptype, scale=1, key=options.key)
-		url = gmap.generate_url() + "&style=feature:all|element:all|color:0xFFFFFF&style=feature:water|element:all|color:0xFFFF00|weight:4&style=feature:all|element:labels|visibility:off" # "&style=feature:road.highway|element:geometry.fill|color:0xFED930"
+		# url = gmap.generate_url() + "&style=feature:all|element:all|color:0xFFFFFF&style=feature:water|element:all|color:0xFFFF00|weight:4&style=feature:all|element:labels|visibility:off" # "&style=feature:road.highway|element:geometry.fill|color:0xFED930"
+		url = gmap.generate_url() + "&style=feature:water|element:all|color:0xFFFF00|weight:4&style=feature:all|element:labels|visibility:off" # "&style=feature:road.highway|element:geometry.fill|color:0xFED930"
 		buffer = BytesIO()
 
 		try:
@@ -127,6 +172,12 @@ def get_gmaps(locations, options):
 				next
 			# yay, save the image
 			img.save(os.path.join(options.out_dir,'water-{}-{}.png'.format(point['lat'],point['lng'])))
+			# and get corresponding landsat thumb(s)
+			get_loc_landsat_images(point, options.out_dir+'/landsat')
+
+			if options.json_out:
+				with open(options.json_out, 'a+') as jsonf:
+					jsonf.write(json.dumps(point))
 
 		buffer.close()
 		
@@ -134,16 +185,21 @@ def get_gmaps(locations, options):
 
 if __name__ == '__main__':
 	options, args =  parser.parse_args()
+
 	if not options.key:
 		raise CommandError("Error: Missing Google Maps API key.\n\nUsage:{}".format(parser.usage))
-	if not options.datafile:
+	if not options.datafile and not options.locations:
+		raise CommandError("Error: you must specify a shapefile or a JSON locations file.\n\n{}\\Usage:{}".format(parser.options.datafile.help, parser.usage))
+
+
+	if options.datafile and not os.path.exists(options.datafile):
 		raise CommandError("Error: data file does not exist.\n\n{}\\Usage:{}".format(parser.options.datafile.help, parser.usage))
 
-	if not os.path.exists(options.datafile):
-		raise CommandError("Error: data file does not exist.\n\n{}\\Usage:{}".format(parser.options.datafile.help, parser.usage))
+	if options.locations and not os.path.exists(options.locations):
+		raise CommandError("Error: locations file does not exist.\n\n{}\\Usage:{}".format(parser.options.locations.help, parser.usage))
 
 	# parse the data file for lat/lngs
-	locations = get_locations(options.datafile)
+	locations = get_locations(options)
 	test_maps = get_gmaps(locations, options)
 
 
