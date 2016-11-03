@@ -122,6 +122,7 @@ def get_locations(options):
 
     shape = geometry.asShape( rec['geometry'])
     (minx, miny, maxx, maxy) = shape.bounds
+    # import pdb; pdb.set_trace()
     x = minx 
     y = miny
     locations = []
@@ -161,6 +162,7 @@ def get_loc_landsat_images(point, outpath):
             filepath = "{}/{}".format(outpath, fn)
         except UnboundLocalError:
             # import pdb; pdb.set_trace()
+            pass
         with open(filepath, 'wb') as f:
             for chunk in r:
                 f.write(chunk)

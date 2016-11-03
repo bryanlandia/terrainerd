@@ -58,7 +58,7 @@ Shapely==1.5.17
 six==1.8.0
 snuggs==1.4.0
 termcolor==1.1.0
--e git+git@github.com:bryanlandia/terrainerd.git@20faa843725de9e02be4e8e316b106f35e57539a#egg=terrainerd&subdirectory=terrainerd
+-e git+git@github.com:bryanlandia/terrainerd.git@d3633668296d3d7cb32011c827460f9e57170bb4#egg=terrainerd&subdirectory=terrainerd
 toolz==0.8.0
 uritemplate==3.0.0
 usgs==0.1.9
