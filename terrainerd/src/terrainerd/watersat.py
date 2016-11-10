@@ -93,7 +93,9 @@ parser.add_option('-s', '--size',
 parser.add_option('-8', '--landsat8', 
                   action="store_true", dest="landsat8", 
                   help="Whether or not to retrieve landsat8 images corresponding to GMap")
-
+parser.add_option('-g', '--gsat', 
+                  action="store_true", dest="googlesat", 
+                  help="Whether or not to retrieve google satellite images corresponding to GMap")
 
 def get_locations(options):
     """ 
@@ -122,31 +124,35 @@ def get_locations(options):
 
     shape = geometry.asShape( rec['geometry'])
     (minx, miny, maxx, maxy) = shape.bounds
-    # import pdb; pdb.set_trace()
     x = minx 
     y = miny
     locations = []
     # step should be determined by zoom level and tile size
-    step =  float(options.step)
+    step = float(options.step)
+    big_step = 1  # use this until the first match
+    
+    # we will use a bigger step until we find a match
     while y < maxy:
+        found_x_match = False
         while x < maxx:
             p = geometry.Point(x,y)
             print "trying point at:x{},y{}".format(p.x, p.y)
             if shape.contains(p):
                 locations.append({'lat':y, 'lng':x})
-            x += step
+                found_x_match = True
+            x += found_x_match and step or big_step
         x = minx
-        y+= step
+        y += found_x_match and step or big_step
     print len(locations)
+    with open('/opt/sfpc/landsatproj/data/out/europe_locs.json', 'r+') as locsfile:
+        locsfile.write(json.dumps(locations))
+
     return locations
 
 
 def get_loc_landsat_images(point, outpath):
     """
     """
-    # this should be done with landsat-util py classes/methods instead
-    # of via command line, but for now...
-
     # subprocess landsat-util
     # subprocess.call(["landsat", "search", "--lat", str(point['lat']), "--lon", str(point['lng']), "-l", "1", "--start", "2016-01-01"])
     resp = searcher.search(paths_rows=None, lat=point['lat'], lon=point['lng'], start_date="2016-01-01", end_date=None, cloud_min=None, cloud_max=20.0, limit=10)
@@ -224,41 +230,79 @@ def get_gmap_static_image(point, options):
     return buffer
 
 
-def process_gmap_image(img, point, options):
-    # look through the Image data for water colored pixels
-    # crop off the bottom 'Google' text
+def get_loc_gmapsat_images(point, options):
+    size = int(options.image_size)
+    gmap = motionless.CenterMap(lat=point['lat'], lon=point['lng'], 
+                                        zoom=int(options.zoom), size_x=size, size_y=size, 
+                                        maptype="hybrid", scale=1, key=options.key)
+    url = gmap.generate_url()
+    buffer = BytesIO()
+
+    try:
+        curl = pycurl.Curl()
+        curl.setopt(curl.URL, url)
+        curl.setopt(curl.WRITEDATA, buffer)
+        curl.perform()
+        curl.close()
+    except:
+        raise  
+
+    return buffer
+
+def crop_gmap_image(img, options):
+    """
+    takes a PIL Image object and returns it 
+    cropped to remove Google branding :P
+    and the new cropped size as a tuple
+    """
     size = int(options.image_size)
     cropped_size = size - GMAP_STATIC_BRANDING_CROP_PX
     img = img.crop((0,0,cropped_size,cropped_size))  # maintain a square
-    img = img.convert('RGB')
-    colors_list = img.getcolors()
-    colors = [c[1] for c in colors_list]
-    colors_dict = dict([(v,k) for k,v in colors_list])
+    return img, cropped_size
 
-    if GOOGLE_WATER_RGB_COLOR in colors:
-        # we don't want image if it's nearly solid water (i.e, close to 
-        # h*w pixel count for the color) or if there is barely any water
-        color_count = colors_dict[GOOGLE_WATER_RGB_COLOR]
-        # there's something strange here.  ...
-        # if you do: reduce(lambda x,y: x+y, [val for key, val in colors_dict.iteritems()]),
-        # you don't get the value of size * size which I think you should
-        if (color_count >= .4 * (size * size)) or (color_count < MIN_COLOR_MATCH_COUNT_THRESHOLD):
-            raise ColorNotFound
-        try:
-            # import pdb; pdb.set_trace()
-            edge_color_points = test_edge_pixels(img, GOOGLE_WATER_RGB_COLOR, width=cropped_size, height=cropped_size)
-            
-            # yay, save the image
-            fpath = os.path.join(options.out_dir,'water-{}-{}.png'.format(point['lat'],point['lng']))
-            img.save(fpath)
-            print "Wrote image from Google Static Maps API for point {}\n".format(point)
 
-            return fpath, edge_color_points
-        except NoColorAtEdge:
-            raise 
-    
+def process_gmap_image(img, point, options, test_colors=False):
+    # look through the Image data for water colored pixels
+    # crop off the bottom 'Google' text
+    size = int(options.image_size)
+    img, cropped_size = crop_gmap_image(img, options)
+
+    if not test_colors:  # this is for satellite secondary image
+        fpath = os.path.join(options.out_dir,'gsat', 'water-sat-{}-{}.png'.format(point['lat'],point['lng']))
+        img.save(fpath)
+        print "Wrote satellite image from Google Static Maps API for point {}\n".format(point)
+        return fpath
     else:    
-        raise ColorNotFound
+        
+        img = img.convert('RGB')
+        colors_list = img.getcolors()
+        colors = [c[1] for c in colors_list]
+        colors_dict = dict([(v,k) for k,v in colors_list])
+
+        if GOOGLE_WATER_RGB_COLOR in colors:
+            # we don't want image if it's nearly solid water (i.e, close to 
+            # h*w pixel count for the color) or if there is barely any water
+            color_count = colors_dict[GOOGLE_WATER_RGB_COLOR]
+            # there's something strange here.  ...
+            # if you do: reduce(lambda x,y: x+y, [val for key, val in colors_dict.iteritems()]),
+            # you don't get the value of size * size which I think you should
+            if (color_count >= .4 * (size * size)) or (color_count < MIN_COLOR_MATCH_COUNT_THRESHOLD):
+                raise ColorNotFound
+            try:
+                # import pdb; pdb.set_trace()
+                edge_color_points = test_edge_pixels(img, GOOGLE_WATER_RGB_COLOR, width=cropped_size, height=cropped_size)
+                
+                # yay, save the image
+                fpath = os.path.join(options.out_dir,'water-{}-{}.png'.format(point['lat'],point['lng']))
+                img.save(fpath)
+                print "Wrote image from Google Static Maps API for point {}\n".format(point)
+
+                return fpath, edge_color_points
+            except NoColorAtEdge:
+                raise 
+        
+        else:    
+            raise ColorNotFound
 
 
 def get_images(locations, options):
@@ -271,14 +315,21 @@ def get_images(locations, options):
         try:
             img_buffer = get_gmap_static_image(point, options)
             img = Image.open(img_buffer)
-            img_filepath, edge_color_points = process_gmap_image(img, point, options)
+            img_filepath, edge_color_points = process_gmap_image(img, point, options, test_colors=True)
             img_buffer.close()
             img_data = dict(lat=point['lat'], lon=point['lng'],
                             gmapstatic=img_filepath,
                             gmap_edge_pixel_matches=edge_color_points)
 
             # record a successful point 
-            # and get corresponding landsat thumb(s)
+            # and get corresponding gmap satellite and/or landsat thumb(s)
+            if options.googlesat:
+                img_buffer = get_loc_gmapsat_images(point, options)
+                img = Image.open(img_buffer)
+                gmap_sat_image = process_gmap_image(img, point, options)
+                img_buffer.close()
+                img_data['gmapsat_image'] = gmap_sat_image
+
             if options.landsat8:
                 landsats_data = get_loc_landsat_images(point, options.out_dir+'/landsat')
                 img_data['landsat_images'] = landsats_data
@@ -287,7 +338,7 @@ def get_images(locations, options):
                 with open(options.json_out, 'a+') as jsonf:
                     jsonf.write(json.dumps(img_data))            
 
-        except (ColorNotFound, NoColorAtEdge):
+        except (ColorNotFound, NoColorAtEdge, TypeError):
             print "Didn't find water match for point {}\n".format(point)        
 
 
