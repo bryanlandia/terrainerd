@@ -1,8 +1,10 @@
-export default class App extends Vue {
+import Canvas from './canvas'
+
+export default class App {
 	constructor() {
-		super({
-			el: 'body',
-			data: {}
-		})
+
+		this.canvas = new Canvas()
+
+
 	}
 }

@@ -1,7 +1,10 @@
 doctype html
 html
 	head
-		include ./pug/_meta.pug
+		include ./pug/meta.pug
 
-	body(v-cloak)
-	script(src='./js/index.js')
+	body
+
+		canvas.canvas
+
+		script(src='./js/index.js')
