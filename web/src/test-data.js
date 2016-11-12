@@ -116,9 +116,9 @@ class App {
 			) / Math.sqrt(2)
 
 			let data = {
-				terrain_image: `/test/images/${pad(index)}_terrain.jpg`,
-				river_image: `/test/images/${pad(index)}_river.png`,
-				height_image: `/test/images/${pad(index)}_height.jpg`,
+				terrain_image: `/test/images/terrain_${pad(index)}.jpg`,
+				river_image: `/test/images/river_${pad(index)}.png`,
+				height_image: `/test/images/height_${pad(index)}.jpg`,
 				meta: {
 					width,
 					address,
@@ -128,8 +128,8 @@ class App {
 				}
 			}
 
-			this.downloadImage(urlTerrain, `${pad(index)}_terrain.jpg`)
-			this.downloadImage(urlWater, `${pad(index)}_water.png`)
+			this.downloadImage(urlTerrain, `terrain_${pad(index)}.jpg`)
+			this.downloadImage(urlWater, `water_${pad(index)}.png`)
 
 			this.dataList.push(data)
 
