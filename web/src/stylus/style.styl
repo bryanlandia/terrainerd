@@ -22,11 +22,6 @@ global-reset()
 ::-webkit-selection
 	background white
 
-[v-cloak]
-	visibility hidden
-
-.header__title-list
-
 //--------------------------------------------------
 html, body
 	width 100%
@@ -46,10 +41,16 @@ body
 	color white
 
 //--------------------------------------------------
+// canvas
+
+.canvas-wrapper
+	top 0
+	right 0
+	bottom 0
+	left 0
+	overflow hidden
+
 .canvas
 	width 100%
 	height 100%
 	background-coor red
-
-
-@import './test-data'
