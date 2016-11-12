@@ -1,0 +1,31 @@
+doctype html
+html
+	head
+		//- Style
+		link(rel='stylesheet' type='text/css' href='./css/style.css')
+
+	body
+
+		div
+			button.export export
+			textarea.export-json
+			span.export-count 0
+			button.export-clear clear
+
+		#map.map
+
+		section
+			h2 Search
+			input.url(type='text')
+			button.search search
+
+		section
+			h2 Generate
+			button.generate generate
+
+
+		ul.result
+
+
+		script(src='./js/test-data.js')
+		script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDjX6XIv-VYdbkTY2vrBTGcPPR0nw-sNU&callback=initMap&libraries=geometry&language=en&region=US")
