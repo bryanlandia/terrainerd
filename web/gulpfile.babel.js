@@ -90,7 +90,9 @@ gulp.task('release', () => {
 //==================================================
 gulp.task('deploy', () => {
 
-	const ftpConfig = require('./ftp.config.js')
+	const ftpConfig = require('./ftp.config.js').default
+
+	console.log(ftpConfig)
 
 	let conn = ftp.create(ftpConfig)
 
