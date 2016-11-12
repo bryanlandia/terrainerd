@@ -52,7 +52,7 @@ module.exports = {
 			Vue: 'vue',
 			$: 'jquery',
 			THREE: 'three',
-			_: 'lodash',
+			_: 'lodash'
 		})
 	]
 }

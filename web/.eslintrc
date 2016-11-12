@@ -35,8 +35,8 @@
   "globals": {
     "jQuery": true,
     "$": true,
-    "Vue": true,
     "THREE": true,
-    "_": true
+    "_": true,
+    "Config": true
   }
 }
