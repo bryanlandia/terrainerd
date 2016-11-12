@@ -1,3 +1,5 @@
+import { device_pixel_ratio } from 'javascript-retina-detect'
+
 import LerpSoft from './lerp-soft'
 import LandManager from './land-manager.js'
 
@@ -58,6 +60,7 @@ export default class Canvas {
 			canvas: $('.canvas')[0]
 		})
 		this.renderer.setClearColor(0x000000)
+		this.renderer.setPixelRatio(device_pixel_ratio())
 
 		this.resizeCanvas()
 	}
