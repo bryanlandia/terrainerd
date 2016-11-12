@@ -117,8 +117,8 @@ class App {
 
 			let data = {
 				terrain_image: `/test/images/${pad(index)}_terrain.jpg`,
-				river_image: `/test/images/${pad(index)}_terrain.jpg`,
-				height_image: `/test/images/${pad(index)}_terrain.jpg`,
+				river_image: `/test/images/${pad(index)}_river.png`,
+				height_image: `/test/images/${pad(index)}_height.jpg`,
 				meta: {
 					width,
 					address,
