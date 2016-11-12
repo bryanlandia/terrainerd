@@ -35,7 +35,7 @@ export default class LandManager extends THREE.Object3D {
 
 		$.getJSON(`/test/data.json?${$.param(args)}`, (data) => {
 
-			let geom = new THREE.PlaneGeometry(Config.LAND_SIZE, Config.LAND_SIZE, 50, 50)
+			let geom = new THREE.PlaneGeometry(Config.LAND_SIZE, Config.LAND_SIZE, 5, 5)
 
 
 			// add land plane
@@ -46,7 +46,8 @@ export default class LandManager extends THREE.Object3D {
 
 				let mat = new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					wireframe: true
+					wireframe: true,
+					side: THREE.DoubleSide
 				})
 				let mesh = new THREE.Mesh(geom, mat)
 				mesh.position.set(
@@ -54,11 +55,12 @@ export default class LandManager extends THREE.Object3D {
 					i * -Config.LAND_STEP,
 					i * Config.LAND_SIZE
 				)
-				mesh.rotation.x = Math.PI / 2
+				mesh.rotation.x = -Math.PI / 2
 				this.add(mesh)
 
 				this.textureLoader.load(d.terrain_image, (texture) => {
 					mat.map = texture
+					mat.wireframe = false
 					mat.needsUpdate = true
 				})
 
