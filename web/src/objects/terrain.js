@@ -10,14 +10,17 @@ export default class Terrain extends THREE.Object3D {
 		this.next = null
 
 		// plane
-		let mat = new THREE.MeshBasicMaterial({
-			color: 0xffffff,
-			wireframe: true,
-			side: THREE.DoubleSide,
-			map: gl.loadTexture(this.info.terrain_image, () => {
-				mat.wireframe = false
-				mat.needsUpdate = true
-			})
+		let mat = new THREE.ShaderMaterial({
+			uniforms: {
+				fogTex:					{value: gl.fogTexture},
+				terrainTex: 		{value: gl.loadTexture(info.terrain_image)},
+				riverTex: 			{value: gl.loadTexture(info.river_image)}
+			},
+			vertexShader: require('./terrain.vert'),
+			fragmentShader: require('./terrain.frag'),
+			depthTest: true,
+			transparent: true,
+			fog: false
 		})
 
 		let geom = new THREE.PlaneGeometry(Config.LAND_SIZE, Config.LAND_SIZE, 5, 5)

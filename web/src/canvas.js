@@ -63,7 +63,7 @@ export default class Canvas {
 			this.scene.add(light)
 		}
 
-		gl.renderer.setClearColor(0xe4e3d4)
+		gl.renderer.setClearColor(Config.BG)
 		gl.renderer.setPixelRatio(device_pixel_ratio())
 
 		this.resizeCanvas()

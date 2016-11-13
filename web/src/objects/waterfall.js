@@ -38,16 +38,17 @@ export default class Waterfall extends THREE.Points {
 				riverTex: 			{value: gl.loadTexture(info.river_image)},
 				nextTerrainTex: {value: gl.texture},
 				nextRiverTex:		{value: gl.texture},
-				nextTerrainOffset: {value: 0.0}
+				nextTerrainOffset: {value: 0.0},
+				fogTex:					{value: gl.fogTexture}
 			},
 			vertexShader: require('./waterfall.vert'),
 			fragmentShader: require('./waterfall.frag'),
 			depthTest: true,
-			transparent: true
+			transparent: true,
+			fog: false
 		})
 
 		super(geometry, mat)
-		// this.frustumCulled = false
 
 		this.uniforms = mat.uniforms
 

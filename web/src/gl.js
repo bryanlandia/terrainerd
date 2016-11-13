@@ -1,3 +1,5 @@
+
+
 let gl = {}
 
 gl.textureLoader = new THREE.TextureLoader()
@@ -5,7 +7,8 @@ gl.renderer = new THREE.WebGLRenderer({
 	canvas: $('.canvas')[0]
 })
 
-gl.texture = new THREE.Texture(require('base64-image!./1x1-transparent.png'))
+gl.texture = gl.textureLoader.load(require('base64-image!./1x1-transparent.png'))
+gl.fogTexture = gl.textureLoader.load(require('base64-image!./fog_gradientmap.png'))
 
 gl.textures = {}
 
