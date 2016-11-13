@@ -6,8 +6,6 @@ export default class LerpSoft {
 		this.max = params.max
 		this.min = params.min
 
-		console.log(this.max, this.min)
-
 		this.value = initValue
 		this.target = initValue
 	}

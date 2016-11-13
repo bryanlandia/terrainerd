@@ -1,9 +1,9 @@
+/* global gl */
 import { device_pixel_ratio } from 'javascript-retina-detect'
 
+import './gl'
 import LerpSoft from './lerp-soft'
 import LandManager from './land-manager.js'
-
-import Config from './config'
 
 export default class Canvas {
 
@@ -17,7 +17,6 @@ export default class Canvas {
 		// bind this
 		this.onScroll = this.onScroll.bind(this)
 
-
 		// add event
 		$(window).on('resize', this.resizeCanvas.bind(this))
 
@@ -30,7 +29,7 @@ export default class Canvas {
 		this.scene = new THREE.Scene()
 
 		this.cameraParent = new THREE.Object3D()
-		// this.cameraParent.rotation.y = -Math.PI * .5
+		// this.cameraParent.rotation.y = -Math.PI * .2
 		this.scene.add(this.cameraParent)
 
 		this.lerpScroll = new LerpSoft(0, {
@@ -45,10 +44,18 @@ export default class Canvas {
 		})
 		this.scene.add(this.landManager)
 
+		{
+			// debug
+			// this.scene.add(new THREE.GridHelper(200, 10))
+		}
+
 		this.camera = new THREE.PerspectiveCamera(30, 1, .1, 1000)
 		this.camera.position.set(0, 80, 150)
-		this.camera.lookAt(new THREE.Vector3(0, 0, 0))
+		this.camera.lookAt(new THREE.Vector3(0, 20, 0))
 		this.cameraParent.add(this.camera)
+
+
+		this.cameraParent.add(new THREE.AxisHelper(10))
 
 		{
 			// add lights
@@ -56,17 +63,14 @@ export default class Canvas {
 			this.scene.add(light)
 		}
 
-		this.renderer = new THREE.WebGLRenderer({
-			canvas: $('.canvas')[0]
-		})
-		this.renderer.setClearColor(0x000000)
-		this.renderer.setPixelRatio(device_pixel_ratio())
+		gl.renderer.setClearColor(0xe4e3d4)
+		gl.renderer.setPixelRatio(device_pixel_ratio())
 
 		this.resizeCanvas()
 	}
 
 	resizeCanvas() {
-		this.renderer.setSize(window.innerWidth, window.innerHeight)
+		gl.renderer.setSize(window.innerWidth, window.innerHeight)
 		this.camera.aspect = window.innerWidth / window.innerHeight
 		this.camera.updateProjectionMatrix()
 	}
@@ -89,6 +93,8 @@ export default class Canvas {
 			this.lerpScroll.value * -(Config.LAND_SIZE / Config.LAND_STEP)
 		)
 
-		this.renderer.render(this.scene, this.camera)
+		this.landManager.update()
+
+		gl.renderer.render(this.scene, this.camera)
 	}
 }

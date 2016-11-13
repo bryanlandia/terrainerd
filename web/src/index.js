@@ -1,3 +1,4 @@
+import './config'
 import App from './app'
 
-new App()
+window.app = new App()
