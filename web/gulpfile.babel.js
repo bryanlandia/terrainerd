@@ -92,7 +92,7 @@ gulp.task('deploy', () => {
 
 	const ftpConfig = require('./ftp.config.js').default
 
-	console.log(ftpConfig)
+	ftpConfig.log = $.util.log
 
 	let conn = ftp.create(ftpConfig)
 
