@@ -93,8 +93,6 @@ export default class Canvas {
 			this.lerpScroll.value * -(Config.LAND_SIZE / Config.LAND_STEP)
 		)
 
-		this.landManager.update()
-
 		gl.renderer.render(this.scene, this.camera)
 	}
 }

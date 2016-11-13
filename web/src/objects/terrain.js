@@ -34,10 +34,6 @@ export default class Terrain extends THREE.Object3D {
 		this.add(plane)
 	}
 
-	update() {
-		this.waterfall.update()
-	}
-
 	setNext(terrain) {
 		this.next = terrain
 		this.waterfall.setNextInfo(this.next.info)

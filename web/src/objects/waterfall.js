@@ -14,14 +14,16 @@ let geometry = (function() {
 	geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
 	geometry.addAttribute('offset', new THREE.BufferAttribute(offsets, 1))
 
-	// geometry.computeBoundingBox()
-	// console.log(geometry.boundingBox)
-	// geometry.boundingBox = {
-	// 	min: new THREE.Vector3(-Config.LAND_SIZE / 2, 0, 0),
-	// 	max: new THREE.Vector3(+Config.LAND_SIZE / 2, -Config.LAND_STEP, 0)
-	// }
+	geometry.boundingSphere = new THREE.Sphere(
+		THREE.Vector3(0, -Config.LAND_STEP / 2, 0),
+		Math.max(Config.LAND_STEP, Config.LAND_SIZE) * Math.sqrt(2) / 2
+	)
+
 	return geometry
 })()
+
+let clock = new THREE.Clock()
+clock.start()
 
 export default class Waterfall extends THREE.Points {
 
@@ -45,16 +47,13 @@ export default class Waterfall extends THREE.Points {
 		})
 
 		super(geometry, mat)
-		this.frustumCulled = false
-
-		this.clock = new THREE.Clock()
-		this.clock.start()
+		// this.frustumCulled = false
 
 		this.uniforms = mat.uniforms
-	}
 
-	update() {
-		this.uniforms.time.value = this.clock.getElapsedTime()
+		this.onBeforeRender = () => {
+			this.uniforms.time.value = clock.getElapsedTime()
+		}
 	}
 
 	setNextInfo(info) {

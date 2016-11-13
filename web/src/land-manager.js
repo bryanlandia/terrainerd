@@ -75,12 +75,6 @@ export default class LandManager extends THREE.Object3D {
 		}
 	}
 
-	update() {
-		for (let i = this.terrainList.length - 1; i >= 0; i--) {
-			this.terrainList[i].update()
-		}
-	}
-
 	// EventEmiter
 	on(name, cb) {
 		this.eventEmitter.on(name, cb)
