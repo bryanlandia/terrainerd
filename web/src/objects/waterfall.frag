@@ -26,5 +26,9 @@ void main() {
 
 	color.rgb = fog(color.rgb, fogTex, pos);
 
+	// vec2 st = gl_PointCoord.xy * 2. - 1.;
+	// float alpha = 1.0 - length(st);
+	// gl_FragColor = vec4(st.x, st.y, 0., alpha);
+
 	gl_FragColor = color;
 }

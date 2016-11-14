@@ -90,7 +90,7 @@ export default class Canvas {
 		this.cameraParent.position.set(
 			this.landManager.getOffsetAt(this.lerpScroll.value),
 			this.lerpScroll.value,
-			this.lerpScroll.value * -(Config.LAND_SIZE / Config.LAND_STEP)
+			this.lerpScroll.value * -((Config.LAND_SIZE + Config.WATERFALL_DEPTH) / Config.LAND_STEP)
 		)
 
 		gl.renderer.render(this.scene, this.camera)

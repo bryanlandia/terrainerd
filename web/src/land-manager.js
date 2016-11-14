@@ -42,7 +42,7 @@ export default class LandManager extends THREE.Object3D {
 				terrain.position.set(
 					offset * Config.LAND_SIZE,
 					i * -Config.LAND_STEP,
-					i * Config.LAND_SIZE
+					i * Config.LAND_SIZE + (i - 1) * Config.WATERFALL_DEPTH
 				)
 				this.add(terrain)
 

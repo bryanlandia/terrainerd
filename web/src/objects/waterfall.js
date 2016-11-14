@@ -1,14 +1,31 @@
 /* global gl */
 
 let geometry = (function() {
-	let num = 100000
+	let num = 10000
 
+	let positions = new Float32Array(num * 3 * 2)
+	let offsets = new Float32Array(num * 2)
+
+	for (let i = 0; i < num; i++) {
+		let p = Math.random()
+		positions[i*6] 		 = p
+		positions[i*6 + 3] = p
+		positions[i*6 + 4] = 1
+
+		let o = Math.random()
+		offsets[i*2] = o
+		offsets[i*2 + 1] = o
+	}
+
+	/*
 	let positions = new Float32Array(num * 3)
 	let offsets = new Float32Array(num)
+
 	for (let i = 0; i < num; i++) {
-		positions[i * 3] = Math.random()
+		positions[i*3] = Math.random()
 		offsets[i] = Math.random()
 	}
+	*/
 
 	let geometry = new THREE.BufferGeometry()
 	geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
@@ -25,13 +42,14 @@ let geometry = (function() {
 let clock = new THREE.Clock()
 clock.start()
 
-export default class Waterfall extends THREE.Points {
+export default class Waterfall extends THREE.LineSegments {
 
 	constructor(info) {
 
 		let mat = new THREE.ShaderMaterial({
 			uniforms: {
 				time: 					{value: 0.0},
+				depth: 					{value: Config.WATERFALL_DEPTH},
 				terrainWidth:		{value: Config.LAND_SIZE},
 				height: 				{value: Config.LAND_STEP},
 				terrainTex: 		{value: gl.loadTexture(info.terrain_image)},
@@ -43,8 +61,9 @@ export default class Waterfall extends THREE.Points {
 			},
 			vertexShader: require('./waterfall.vert'),
 			fragmentShader: require('./waterfall.frag'),
-			depthTest: true,
+			// depthTest: true,
 			transparent: true,
+			// blending: THREE.AdditiveBlending,
 			fog: false
 		})
 
