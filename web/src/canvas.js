@@ -39,8 +39,8 @@ export default class Canvas {
 		})
 
 		this.landManager = new LandManager()
-		this.landManager.on('load', () => {
-			this.lerpScroll.min = (this.landManager.children.length - 1) * -Config.LAND_STEP
+		this.landManager.on('load', (e) => {
+			this.lerpScroll.min = -e.cameraSplineLength
 		})
 		this.scene.add(this.landManager)
 
@@ -87,11 +87,7 @@ export default class Canvas {
 		requestAnimationFrame(this.render)
 
 		this.lerpScroll.update()
-		this.cameraParent.position.set(
-			this.landManager.getOffsetAt(this.lerpScroll.value),
-			this.lerpScroll.value,
-			this.lerpScroll.value * -((Config.LAND_SIZE + Config.WATERFALL_DEPTH) / Config.LAND_STEP)
-		)
+		this.cameraParent.position.copy(this.landManager.getOffsetAt(this.lerpScroll.value))
 
 		gl.renderer.render(this.scene, this.camera)
 	}

@@ -13,6 +13,8 @@ export default class LandManager extends THREE.Object3D {
 		this.loading = false
 		this.lastOffset = 0
 
+		this.cameraSpline = new THREE.CatmullRomCurve3([])
+
 		this.nextLink = '/test/data.json?random=true'
 
 		this.load()
@@ -31,47 +33,53 @@ export default class LandManager extends THREE.Object3D {
 
 			this.nextLink = data.next_link
 
+			let splinePoints = this.cameraSpline.points
+
 			// add land plane
 			data.terrains.forEach((info) => {
 
 				let i = this.terrainList.length
-
 				let offset = i == 0 ? 0 : this.lastOffset + info.offset
 
-				let terrain = new Terrain(info)
-				terrain.position.set(
+				// generate center point of terrain
+				let center = new THREE.Vector3(
 					offset * Config.LAND_SIZE,
 					i * -Config.LAND_STEP,
 					i * Config.LAND_SIZE + (i - 1) * Config.WATERFALL_DEPTH
 				)
+
+				// add terrain
+				let terrain = new Terrain(info)
+				terrain.position.copy(center)
 				this.add(terrain)
+
+				// add point to camera spline
+				splinePoints.push(center)
 
 				if (i > 0) {
 					this.terrainList[i - 1].setNext(terrain)
 				}
 
 				this.terrainList.push(terrain)
-
 				this.lastOffset = offset
 			})
 
+			// calculate camera points
+			this.cameraSpline = new THREE.CatmullRomCurve3(splinePoints)
+			this.cameraSplineLength = this.cameraSpline.getLength()
+
 			this.loading = false
-			this.emit('load')
+			this.emit('load', {cameraSplineLength: this.cameraSplineLength})
 		})
 	}
 
 	getOffsetAt(y) {
-		let fi = -y / Config.LAND_STEP
-		let i = Math.floor(fi)
-		let t = fi - i
 
-		if (this.terrainList.length <= i + 1) {
-			return 0
+		if (this.terrainList.length == 0) {
+			return new THREE.Vector3(0, 0, 0)
 		} else {
-			let a = this.terrainList[i].position.x
-			let b = this.terrainList[i + 1].position.x
-
-			return (a + (b - a) * t)
+			let t = -y / this.cameraSplineLength
+			return this.cameraSpline.getPoint(t)
 		}
 	}
 
@@ -80,7 +88,7 @@ export default class LandManager extends THREE.Object3D {
 		this.eventEmitter.on(name, cb)
 	}
 
-	emit(name) {
-		this.eventEmitter.emit(name)
+	emit(name, e) {
+		this.eventEmitter.emit(name, e)
 	}
 }

@@ -10,5 +10,9 @@ export default class App {
 		this.canvas = new Canvas()
 		this.virtualScroll.on(this.canvas.onScroll)
 
+		$(window).on('scroll', (e) => {
+			e.preventDefault()
+		})
+
 	}
 }
