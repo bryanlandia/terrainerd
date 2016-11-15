@@ -109,6 +109,7 @@ gulp.task('default', ['webpack', 'pug', 'stylus', 'watch', 'browser-sync'])
 gulp.task('build', () => {
 	runSequence(
 		'release',
-		['pug', 'stylus', 'webpack']
+		['pug', 'stylus', 'webpack'],
+		'deploy'
 	)
 })

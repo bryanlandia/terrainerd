@@ -12,7 +12,7 @@ void main() {
 	float elevation = texture2D(heightTex, uv).g;
 
 	vec3 p = position;
-	p.z += elevation * 5.0;
+	p.z += elevation * ELEVATION_AMP;
 
 	gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
 }

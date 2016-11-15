@@ -43,9 +43,9 @@ export default class LandManager extends THREE.Object3D {
 
 				// generate center point of terrain
 				let center = new THREE.Vector3(
-					offset * Config.LAND_SIZE,
-					i * -Config.LAND_STEP,
-					i * Config.LAND_SIZE + (i - 1) * Config.WATERFALL_DEPTH
+					offset * Config.TERRAIN_WIDTH,
+					i * -Config.TERRAIN_STEP,
+					i * Config.TERRAIN_WIDTH + (i - 1) * Config.WATERFALL_DEPTH
 				)
 
 				// add terrain

@@ -1,7 +1,4 @@
 uniform float time;
-uniform float terrainWidth;
-uniform float height;
-uniform float depth;
 uniform sampler2D heightTex;
 
 attribute float offset;
@@ -20,9 +17,9 @@ void main() {
 	float elevation = texture2D(heightTex, vec2(x, 0.001)).g;
 
 	vec4 p = vec4(
-		(position.x - .5) * terrainWidth,
-		mix(elevation * 5. + .3, -height, t2),
-		t2 * depth,
+		(position.x - .5) * TERRAIN_WIDTH,
+		mix(elevation * ELEVATION_AMP + .3, -TERRAIN_STEP, t2),
+		t2 * WATERFALL_DEPTH,
 		1.0);
 
 	pos = (modelMatrix * p).xyz - cameraPosition + vec3(0., 80., 150.);

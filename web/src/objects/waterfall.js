@@ -22,8 +22,8 @@ let geometry = (function() {
 	geometry.addAttribute('offset', new THREE.BufferAttribute(offsets, 1))
 
 	geometry.boundingSphere = new THREE.Sphere(
-		THREE.Vector3(0, -Config.LAND_STEP / 2, 0),
-		Math.max(Config.LAND_STEP, Config.LAND_SIZE) * Math.sqrt(2) / 2
+		THREE.Vector3(0, -Config.TERRAIN_STEP / 2, 0),
+		Math.max(Config.TERRAIN_STEP, Config.TERRAIN_WIDTH) * Math.sqrt(2) / 2
 	)
 
 	return geometry
@@ -39,9 +39,6 @@ export default class Waterfall extends THREE.LineSegments {
 		let mat = new THREE.ShaderMaterial({
 			uniforms: {
 				time: 					{value: 0.0},
-				depth: 					{value: Config.WATERFALL_DEPTH},
-				terrainWidth:		{value: Config.LAND_SIZE},
-				height: 				{value: Config.LAND_STEP},
 				terrainTex: 		{value: gl.loadTexture(info.terrain_image)},
 				heightTex: 			{value: gl.loadTexture(info.height_image)},
 				nextTerrainTex: {value: gl.texture},
@@ -49,11 +46,16 @@ export default class Waterfall extends THREE.LineSegments {
 				nextTerrainOffset: {value: 0.0},
 				fogTex:					{value: gl.fogTexture}
 			},
+			defines: {
+				ELEVATION_AMP: Config.ELEVATION_AMP.toFixed(1),
+				WATERFALL_DEPTH: Config.WATERFALL_DEPTH.toFixed(1),
+				TERRAIN_STEP: Config.TERRAIN_STEP.toFixed(1),
+				TERRAIN_WIDTH: Config.TERRAIN_WIDTH.toFixed(1)
+			},
 			vertexShader: require('./waterfall.vert'),
 			fragmentShader: require('./waterfall.frag'),
-			// depthTest: true,
+			depthTest: true,
 			transparent: true,
-			// blending: THREE.AdditiveBlending,
 			fog: false
 		})
 

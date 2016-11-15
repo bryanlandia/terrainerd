@@ -1,7 +1,7 @@
 /* global gl*/
 import Waterfall from './waterfall.js'
 
-let geometry = new THREE.PlaneGeometry(Config.LAND_SIZE, Config.LAND_SIZE, 64, 64)
+let geometry = new THREE.PlaneGeometry(Config.TERRAIN_WIDTH, Config.TERRAIN_WIDTH, Config.TERRAIN_SEGMENTS, Config.TERRAIN_SEGMENTS)
 
 export default class Terrain extends THREE.Object3D {
 
@@ -19,6 +19,9 @@ export default class Terrain extends THREE.Object3D {
 				heightTex: 			{value: gl.loadTexture(info.height_image.replace('jpg', 'png'))},
 				heightDiff:			{value: info.meta.elevationDiff}
 			},
+			defines: {
+				ELEVATION_AMP: Config.ELEVATION_AMP.toFixed(1)
+			},
 			vertexShader: require('./terrain.vert'),
 			fragmentShader: require('./terrain.frag'),
 			depthTest: true,
@@ -32,7 +35,7 @@ export default class Terrain extends THREE.Object3D {
 
 		// waterfall
 		this.waterfall = new Waterfall(info)
-		this.waterfall.position.z = Config.LAND_SIZE / 2.0
+		this.waterfall.position.z = Config.TERRAIN_WIDTH / 2.0
 		this.add(this.waterfall)
 
 
