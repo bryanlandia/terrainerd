@@ -14,7 +14,9 @@ export default class Terrain extends THREE.Object3D {
 			uniforms: {
 				fogTex:					{value: gl.fogTexture},
 				terrainTex: 		{value: gl.loadTexture(info.terrain_image)},
-				riverTex: 			{value: gl.loadTexture(info.river_image)}
+				riverTex: 			{value: gl.loadTexture(info.river_image)},
+				heightTex: 			{value: gl.loadTexture(info.height_image)},
+				heightDiff:			{value: info.meta.elevationDiff}
 			},
 			vertexShader: require('./terrain.vert'),
 			fragmentShader: require('./terrain.frag'),
@@ -23,7 +25,7 @@ export default class Terrain extends THREE.Object3D {
 			fog: false
 		})
 
-		let geom = new THREE.PlaneGeometry(Config.LAND_SIZE, Config.LAND_SIZE, 5, 5)
+		let geom = new THREE.PlaneGeometry(Config.LAND_SIZE, Config.LAND_SIZE, 64, 64)
 
 		let plane = new THREE.Mesh(geom, mat)
 
