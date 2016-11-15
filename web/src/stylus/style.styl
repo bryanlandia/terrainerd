@@ -12,6 +12,10 @@ uniform-centerize()
 
 global-reset()
 
+$c-blue = #5200ff
+$c-invert = #d4b56f
+$easing = cubic-bezier(.27,0,.08,1)
+
 //--------------------------------------------------
 *, ::after, ::before
 	box-sizing: border-box
@@ -23,12 +27,15 @@ global-reset()
 	background white
 
 a
+	text-decoration:none;
+	border-bottom 1px dashed black
+
 	&:link, &:visited
-		color #5200ff
+		color $c-blue
 
 	&:hover
 		color white
-		background #5200ff
+		background $c-blue
 
 //--------------------------------------------------
 html, body
@@ -38,10 +45,22 @@ html, body
 	overflow-x hidden
 	overflow-y hidden
 
+button
+	font-family inherit
+	border 0
+	background transparent
+	cursor pointer
+
+
 html
-	font-family 'Cabin', sans-serif
+	font-family: 'Cormorant Garamond', serif
+	font-style italic
+	// font-family 'Cabin', sans-serif
 	font-smoothing antialiased
 	-moz-osx-font-smoothing grayscale
+	font-size 10px
+	// font-smoothing none
+	// -moz-osx-font-smoothing none
 
 body
 	// font-size 1.6rem
@@ -49,7 +68,7 @@ body
 	background #e4e3d4
 	line-height 1.2
 	// color #21182b
-	color #5200ff
+	color $c-blue
 
 //--------------------------------------------------
 // canvas
@@ -69,12 +88,13 @@ body
 //--------------------------------------------------
 // page component
 
-$page-border-width = 12px
+$page-border-width = .8rem
 
 .page-border
 	position absolute
 	background-color white
-	mix-blend-mode difference
+	mix-blend-mode exclusion
+	background-color #ffb100
 
 	&.top
 		top 0
@@ -100,15 +120,91 @@ $page-border-width = 12px
 		top $page-border-width
 		width $page-border-width
 
-	&.lighten
-		background-color #e8e8e8
-		mix-blend-mode luminosity
-
-
-.credit
+.about-button
 	position absolute
-	z-index 100
-	bottom 20px
-	right 23px
-	letter-spacing: .15em
-	font-size 1rem
+	top 2.4rem
+	right 2.4rem
+	width 4.8rem
+	height 4.8rem
+	z-index 10
+	font-size 3.6rem
+	color $c-invert
+	mix-blend-mode exclusion
+	border 1px dashed transparent
+	border-radius 50%
+	transition border-color .2s ease
+	overflow hidden
+
+	&:hover
+		border-color $c-invert
+
+	&.close
+		.wrapper
+			transform translateY(-100%)
+
+	span
+		display block
+
+	.wrapper
+		position absolute
+		top 0
+		left 0
+		width 100%
+		height 100%
+		transition transform .5s $easing
+
+	.panel
+		position relative
+		width 100%
+		height 100%
+
+	.x
+		position absolute
+		left 10%
+		top 50%
+		width 80%
+		height: 1px
+		background-color $c-invert
+
+	.x--a
+		transform rotate(45deg)
+
+	.x--b
+		transform rotate(-45deg)
+
+.about
+	position absolute
+	top -5%
+	left -5%
+	right -5%
+	bottom -5%
+	display flex
+	flex-direction column
+	justify-content center
+	z-index 20
+	font-size 2.4rem
+	transition all .5s $easing 0s, visibility 0s linear 0.5s
+	transform scale(0.96)
+	visibility hidden
+	opacity 0
+	background-color $c-invert
+	mix-blend-mode exclusion
+	color black
+	line-height 2
+
+	&.show
+		transform none
+		opacity 1
+		visibility: visible
+		transition all .5s $easing 0s, visibility 0s linear 0s
+
+	p
+		text-align center
+
+	a
+		&:link, &:visited
+			color black
+
+		&:hover, &:focus
+			color $c-invert
+			background-color black

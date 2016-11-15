@@ -14,6 +14,13 @@ export default class App {
 			e.preventDefault()
 		})
 
+		// about
+		$('.about-button, .about').on('click', () => {
+			$('.about').toggleClass('show')
+			$('.about-button').toggleClass('close')
+		})
+
+		// prevent scroll on mobile
 		window.addEventListener('scroll', preventMotion, false)
 		window.addEventListener('touchmove', preventMotion, false)
 
@@ -23,7 +30,5 @@ export default class App {
 			event.preventDefault()
 			event.stopPropagation()
 		}
-
-
 	}
 }
