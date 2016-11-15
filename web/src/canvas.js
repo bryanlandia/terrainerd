@@ -76,7 +76,7 @@ export default class Canvas {
 	}
 
 	onScroll(e) {
-		this.lerpScroll.offsetTarget(e.deltaY / 20)
+		this.lerpScroll.offsetTarget(e.deltaY * Config.SCROLL_SPEED)
 
 		if (this.lerpScroll.target == this.lerpScroll.min) {
 			this.landManager.load()

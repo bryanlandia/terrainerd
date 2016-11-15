@@ -1,3 +1,7 @@
+import MobileDetect from 'mobile-detect'
+
+let md = new MobileDetect(window.navigator.userAgent)
+
 window.Config = {
 
 	// terrain
@@ -11,5 +15,6 @@ window.Config = {
 	WATERFALL_DEPTH: 4,
 
 	// environment
-	BG: 0xe4e3d4
+	BG: 0xe4e3d4,
+	SCROLL_SPEED: md.mobile() ? .1 : .05
 }
