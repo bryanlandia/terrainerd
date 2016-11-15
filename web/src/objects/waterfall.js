@@ -1,7 +1,7 @@
 /* global gl */
 
 let geometry = (function() {
-	let num = 10000
+	let num = 7000
 
 	let positions = new Float32Array(num * 3 * 2)
 	let offsets = new Float32Array(num * 2)
@@ -16,16 +16,6 @@ let geometry = (function() {
 		offsets[i*2] = o
 		offsets[i*2 + 1] = o
 	}
-
-	/*
-	let positions = new Float32Array(num * 3)
-	let offsets = new Float32Array(num)
-
-	for (let i = 0; i < num; i++) {
-		positions[i*3] = Math.random()
-		offsets[i] = Math.random()
-	}
-	*/
 
 	let geometry = new THREE.BufferGeometry()
 	geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
@@ -53,9 +43,9 @@ export default class Waterfall extends THREE.LineSegments {
 				terrainWidth:		{value: Config.LAND_SIZE},
 				height: 				{value: Config.LAND_STEP},
 				terrainTex: 		{value: gl.loadTexture(info.terrain_image)},
-				riverTex: 			{value: gl.loadTexture(info.river_image)},
+				heightTex: 			{value: gl.loadTexture(info.height_image)},
 				nextTerrainTex: {value: gl.texture},
-				nextRiverTex:		{value: gl.texture},
+				nextHeightTex:	{value: gl.texture},
 				nextTerrainOffset: {value: 0.0},
 				fogTex:					{value: gl.fogTexture}
 			},
@@ -78,7 +68,7 @@ export default class Waterfall extends THREE.LineSegments {
 
 	setNextInfo(info) {
 		this.uniforms.nextTerrainTex.value = gl.loadTexture(info.terrain_image)
-		this.uniforms.nextRiverTex.value = gl.loadTexture(info.river_image)
+		this.uniforms.nextHeightTex.value = gl.loadTexture(info.height_image)
 		this.uniforms.nextTerrainOffset.value = info.offset
 	}
 
