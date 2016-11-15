@@ -1,6 +1,7 @@
 node_modules
 ftp.config.js
 
-public
+public/*
+!public/assets
 
 doc

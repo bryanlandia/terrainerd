@@ -1,7 +1,17 @@
 /* global gl*/
+import 'OBJLoader'
+
 import Waterfall from './waterfall.js'
 
-let geometry = new THREE.PlaneGeometry(Config.TERRAIN_WIDTH, Config.TERRAIN_WIDTH, Config.TERRAIN_SEGMENTS, Config.TERRAIN_SEGMENTS)
+let objLoader = new THREE.OBJLoader()
+
+let geometry = null
+let onLoadGeometry = []
+
+objLoader.load('./assets/terrain.obj', (obj) => {
+	geometry = obj.children[0].geometry
+	onLoadGeometry.forEach((cb) => cb())
+})
 
 export default class Terrain extends THREE.Object3D {
 
@@ -29,9 +39,15 @@ export default class Terrain extends THREE.Object3D {
 			fog: false
 		})
 
-
-
-		let plane = new THREE.Mesh(geometry, mat)
+		if (geometry) {
+			let mesh = new THREE.Mesh(geometry, mat)
+			this.add(mesh)
+		} else {
+			onLoadGeometry.push(() => {
+				let mesh = new THREE.Mesh(geometry, mat)
+				this.add(mesh)
+			})
+		}
 
 		// waterfall
 		this.waterfall = new Waterfall(info)
@@ -39,8 +55,8 @@ export default class Terrain extends THREE.Object3D {
 		this.add(this.waterfall)
 
 
-		plane.rotation.x = -Math.PI / 2
-		this.add(plane)
+
+
 	}
 
 	setNext(terrain) {
