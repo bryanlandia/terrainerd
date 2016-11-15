@@ -24,7 +24,7 @@ def main():
 			'br': {'lat': sw['lat'], 'lng': ne['lng']}
 		}
 
-		result = generateHeightmap(rect, 64)
+		result = generateHeightmap(rect, 128)
 
 		data['terrains'][i]['meta']['elevation_min'] = result['min']
 		data['terrains'][i]['meta']['elevation_max'] = result['max']
