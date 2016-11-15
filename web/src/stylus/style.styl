@@ -12,6 +12,15 @@ uniform-centerize()
 
 global-reset()
 
+mobile()
+	@media only screen and (max-width: 460px)
+		{block}
+
+.mq
+	font-family 'pc'
+	+mobile()
+		font-family 'mobile'
+
 $c-blue = #5200ff
 $c-invert = #d4b56f
 $easing = cubic-bezier(.27,0,.08,1)
@@ -45,13 +54,6 @@ html, body
 	overflow-x hidden
 	overflow-y hidden
 
-button
-	font-family inherit
-	border 0
-	background transparent
-	cursor pointer
-
-
 html
 	font-family: 'Cormorant Garamond', serif
 	font-style italic
@@ -62,6 +64,9 @@ html
 	// font-smoothing none
 	// -moz-osx-font-smoothing none
 
+	+mobile()
+		font-size 6px
+
 body
 	// font-size 1.6rem
 	position relative
@@ -69,6 +74,15 @@ body
 	line-height 1.2
 	// color #21182b
 	color $c-blue
+
+button
+	font-family inherit
+	border 0
+	background transparent
+	cursor pointer
+	padding 0
+	margin 0
+	// -webkit-appearance none
 
 //--------------------------------------------------
 // canvas
@@ -83,7 +97,6 @@ body
 .canvas
 	width 100%
 	height 100%
-	background-coor red
 
 //--------------------------------------------------
 // page component
@@ -124,14 +137,16 @@ $page-border-width = .8rem
 	position absolute
 	top 2.4rem
 	right 2.4rem
-	width 4.8rem
-	height 4.8rem
+	width 48px !important
+	height 48px !important
+	line-height 48px
 	z-index 10
 	font-size 3.6rem
 	color $c-invert
 	mix-blend-mode exclusion
 	border 1px dashed transparent
 	border-radius 50%
+	// background red
 	transition border-color .2s ease
 	overflow hidden
 
@@ -140,7 +155,7 @@ $page-border-width = .8rem
 
 	&.close
 		.wrapper
-			transform translateY(-100%)
+			transform translateY(0)
 
 	span
 		display block
@@ -152,6 +167,7 @@ $page-border-width = .8rem
 		width 100%
 		height 100%
 		transition transform .5s $easing
+		transform translateY(-100%)
 
 	.panel
 		position relative
@@ -160,9 +176,9 @@ $page-border-width = .8rem
 
 	.x
 		position absolute
-		left 10%
+		left 20%
 		top 50%
-		width 80%
+		width 60%
 		height: 1px
 		background-color $c-invert
 
@@ -175,8 +191,8 @@ $page-border-width = .8rem
 .about
 	position absolute
 	top -5%
-	left -5%
-	right -5%
+	left 0
+	right 0
 	bottom -5%
 	display flex
 	flex-direction column
@@ -184,7 +200,7 @@ $page-border-width = .8rem
 	z-index 20
 	font-size 2.4rem
 	transition all .5s $easing 0s, visibility 0s linear 0.5s
-	transform scale(0.96)
+	transform translateY(-3%)
 	visibility hidden
 	opacity 0
 	background-color $c-invert

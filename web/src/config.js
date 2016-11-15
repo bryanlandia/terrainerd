@@ -16,5 +16,5 @@ window.Config = {
 
 	// environment
 	BG: 0xe4e3d4,
-	SCROLL_SPEED: md.mobile() ? .1 : .05
+	SCROLL_SPEED: md.mobile() ? .15 : .05
 }
