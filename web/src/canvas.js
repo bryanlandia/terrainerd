@@ -2,7 +2,7 @@
 import { device_pixel_ratio } from 'javascript-retina-detect'
 
 import './gl'
-import LandManager from './land-manager'
+import TerrainManager from './terrain-manager'
 import Clouds	from './objects/clouds'
 import CameraRig from './camera-rig'
 
@@ -32,17 +32,17 @@ export default class Canvas {
 		// camera
 		this.cameraRig = new CameraRig()
 		this.cameraRig.on('reached-bottom', () => {
-			this.landManager.load()
+			this.terrainManager.load()
 		})
 		this.scene.add(this.cameraRig)
 
 		// terrain
-		this.landManager = new LandManager()
-		this.landManager.on('load', (e) => {
+		this.terrainManager = new TerrainManager()
+		this.terrainManager.on('load', (e) => {
 			this.clouds.generate(e.cameraSpline)
 			this.cameraRig.setSpline(e.cameraSpline)
 		})
-		this.scene.add(this.landManager)
+		this.scene.add(this.terrainManager)
 
 		{
 			// debug

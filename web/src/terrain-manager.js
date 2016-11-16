@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3'
 import Terrain from './objects/terrain'
 
-export default class LandManager extends THREE.Object3D {
+export default class TerrainManager extends THREE.Object3D {
 
 	constructor() {
 		super()
