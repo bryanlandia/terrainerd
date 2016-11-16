@@ -14,6 +14,9 @@ window.Config = {
 	// waterfall
 	WATERFALL_DEPTH: 4,
 
+	// cloud
+	CLOUD_FILL: new THREE.Color(0xF8F2E5),
+
 	// environment
 	BG: 0xe4e3d4,
 	SCROLL_SPEED: md.mobile() ? .15 : .05

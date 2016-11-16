@@ -69,18 +69,8 @@ export default class LandManager extends THREE.Object3D {
 			this.cameraSplineLength = this.cameraSpline.getLength()
 
 			this.loading = false
-			this.emit('load', {cameraSplineLength: this.cameraSplineLength})
+			this.emit('load', {cameraSplineLength: this.cameraSplineLength, cameraSpline: this.cameraSpline})
 		})
-	}
-
-	getOffsetAt(y) {
-
-		if (this.terrainList.length == 0) {
-			return new THREE.Vector3(0, 0, 0)
-		} else {
-			let t = -y / this.cameraSplineLength
-			return this.cameraSpline.getPoint(t)
-		}
 	}
 
 	// EventEmiter

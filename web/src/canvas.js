@@ -2,8 +2,9 @@
 import { device_pixel_ratio } from 'javascript-retina-detect'
 
 import './gl'
-import LerpSoft from './lerp-soft'
-import LandManager from './land-manager.js'
+import LandManager from './land-manager'
+import Clouds	from './objects/clouds'
+import CameraRig from './camera-rig'
 
 export default class Canvas {
 
@@ -28,19 +29,18 @@ export default class Canvas {
 	initScene() {
 		this.scene = new THREE.Scene()
 
-		this.cameraParent = new THREE.Object3D()
-		// this.cameraParent.rotation.y = -Math.PI * .2
-		this.scene.add(this.cameraParent)
-
-		this.lerpScroll = new LerpSoft(0, {
-			coeff: .1,
-			max: 0,
-			min: 0
+		// camera
+		this.cameraRig = new CameraRig()
+		this.cameraRig.on('reached-bottom', () => {
+			this.landManager.load()
 		})
+		this.scene.add(this.cameraRig)
 
+		// terrain
 		this.landManager = new LandManager()
 		this.landManager.on('load', (e) => {
-			this.lerpScroll.min = -e.cameraSplineLength
+			this.clouds.generate(e.cameraSpline)
+			this.cameraRig.setSpline(e.cameraSpline)
 		})
 		this.scene.add(this.landManager)
 
@@ -49,13 +49,9 @@ export default class Canvas {
 			// this.scene.add(new THREE.GridHelper(200, 10))
 		}
 
-		this.camera = new THREE.PerspectiveCamera(30, 1, .1, 1000)
-		this.camera.position.set(0, 80, 150)
-		this.camera.lookAt(new THREE.Vector3(0, 20, 0))
-		this.cameraParent.add(this.camera)
-
-
-		this.cameraParent.add(new THREE.AxisHelper(10))
+		// cloud
+		this.clouds = new Clouds()
+		this.scene.add(this.clouds)
 
 		{
 			// add lights
@@ -71,24 +67,18 @@ export default class Canvas {
 
 	resizeCanvas() {
 		gl.renderer.setSize(window.innerWidth, window.innerHeight)
-		this.camera.aspect = window.innerWidth / window.innerHeight
-		this.camera.updateProjectionMatrix()
+		this.cameraRig.setAspect(window.innerWidth / window.innerHeight)
 	}
 
 	onScroll(e) {
-		this.lerpScroll.offsetTarget(e.deltaY * Config.SCROLL_SPEED)
-
-		if (this.lerpScroll.target == this.lerpScroll.min) {
-			this.landManager.load()
-		}
+		this.cameraRig.scroll(e)
 	}
 
 	render() {
 		requestAnimationFrame(this.render)
 
-		this.lerpScroll.update()
-		this.cameraParent.position.copy(this.landManager.getOffsetAt(this.lerpScroll.value))
+		this.cameraRig.update()
 
-		gl.renderer.render(this.scene, this.camera)
+		gl.renderer.render(this.scene, this.cameraRig.camera)
 	}
 }
