@@ -15,9 +15,8 @@ export default class App {
 		})
 
 		// about
-		$('.about-button, .about').on('click', () => {
-			$('.about').toggleClass('show')
-			$('.about-button').toggleClass('close')
+		$('.about__button, .about__content').on('click', () => {
+			$('body').toggleClass('show-about')
 		})
 
 		// prevent scroll on mobile

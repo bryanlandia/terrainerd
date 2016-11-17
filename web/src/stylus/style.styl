@@ -37,7 +37,7 @@ $easing = cubic-bezier(.27,0,.08,1)
 
 a
 	text-decoration:none;
-	border-bottom 1px dashed black
+	border-bottom 1px dashed white
 
 	&:link, &:visited
 		color $c-blue
@@ -133,7 +133,15 @@ $page-border-width = .8rem
 		top $page-border-width
 		width $page-border-width
 
-.about-button
+.about
+	position absolute
+	top 0
+	left 0
+	right 0
+	bottom 0
+	z-index 20
+
+.about__button
 	position absolute
 	top 2.4rem
 	right 2.4rem
@@ -153,7 +161,7 @@ $page-border-width = .8rem
 	&:hover
 		border-color $c-invert
 
-	&.close
+		.show-about &
 		.wrapper
 			transform translateY(0)
 
@@ -188,27 +196,42 @@ $page-border-width = .8rem
 	.x--b
 		transform rotate(-45deg)
 
-.about
+.about__bg
 	position absolute
 	top -5%
 	left 0
 	right 0
 	bottom -5%
-	display flex
-	flex-direction column
-	justify-content center
-	z-index 20
-	font-size 2.4rem
 	transition all .5s $easing 0s, visibility 0s linear 0.5s
-	transform translateY(-3%)
 	visibility hidden
 	opacity 0
 	background-color $c-invert
 	mix-blend-mode exclusion
-	color black
-	line-height 2
 
-	&.show
+	.show-about &
+		transform none
+		opacity 1
+		visibility: visible
+		transition all .5s $easing 0s, visibility 0s linear 0s
+
+.about__content
+	position absolute
+	top 0
+	left 0
+	right 0
+	bottom 0
+	transition all .5s $easing 0s, visibility 0s linear 0.5s
+	transform translateY(-3%)
+	visibility: hidden
+	color white
+	opacity 0
+	line-height 2
+	display flex
+	flex-direction column
+	justify-content center
+	font-size 2.4rem
+
+	.show-about &
 		transform none
 		opacity 1
 		visibility: visible
@@ -219,8 +242,8 @@ $page-border-width = .8rem
 
 	a
 		&:link, &:visited
-			color black
+			color white
 
 		&:hover, &:focus
-			color $c-invert
-			background-color black
+			color $c-blue
+			background-color white
