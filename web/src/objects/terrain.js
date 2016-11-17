@@ -45,6 +45,7 @@ export default class Terrain extends THREE.Object3D {
 		} else {
 			onLoadGeometry.push(() => {
 				let mesh = new THREE.Mesh(geometry, mat)
+				mesh.matrixAutoUpdate = false
 				this.add(mesh)
 			})
 		}
@@ -52,11 +53,9 @@ export default class Terrain extends THREE.Object3D {
 		// waterfall
 		this.waterfall = new Waterfall(info)
 		this.waterfall.position.z = Config.TERRAIN_WIDTH / 2.0
+		this.waterfall.matrixAutoUpdate = false
+		this.waterfall.updateMatrix()
 		this.add(this.waterfall)
-
-
-
-
 	}
 
 	setNext(terrain) {

@@ -53,12 +53,6 @@ export default class Canvas {
 		this.clouds = new Clouds()
 		this.scene.add(this.clouds)
 
-		{
-			// add lights
-			let light = new THREE.AmbientLight(0xffffff)
-			this.scene.add(light)
-		}
-
 		gl.renderer.setClearColor(Config.BG)
 		gl.renderer.setPixelRatio(device_pixel_ratio())
 

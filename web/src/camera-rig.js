@@ -20,6 +20,8 @@ export default class CameraRig extends THREE.Object3D {
 		this.camera = new THREE.PerspectiveCamera(30, 1, .1, 1000)
 		this.camera.position.set(0, 80, 150)
 		this.camera.lookAt(new THREE.Vector3(0, 0, 0))
+		this.camera.matrixAutoUpdate = false
+		this.camera.updateMatrix()
 		this.add(this.camera)
 
 		// camera spline

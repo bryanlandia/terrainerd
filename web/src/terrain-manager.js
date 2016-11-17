@@ -51,6 +51,8 @@ export default class TerrainManager extends THREE.Object3D {
 				// add terrain
 				let terrain = new Terrain(info)
 				terrain.position.copy(center)
+				terrain.matrixAutoUpdate = false
+				terrain.updateMatrix()
 				this.add(terrain)
 
 				// add point to camera spline
