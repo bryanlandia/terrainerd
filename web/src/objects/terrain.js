@@ -1,7 +1,9 @@
 /* global gl*/
 import 'OBJLoader'
 
-import Waterfall from './waterfall.js'
+import formatLatLng from '../format-latlng'
+import Waterfall from './waterfall'
+import Caption from './caption'
 
 let objLoader = new THREE.OBJLoader()
 
@@ -56,6 +58,15 @@ export default class Terrain extends THREE.Object3D {
 		this.waterfall.matrixAutoUpdate = false
 		this.waterfall.updateMatrix()
 		this.add(this.waterfall)
+
+		// text
+		let address = new Caption(info.meta.address)
+		address.position.set(0, 20, 0)
+		this.add(address)
+
+		let center = new Caption(formatLatLng(info.meta.center))
+		center.position.set(0, 17, 0)
+		this.add(center)
 	}
 
 	setNext(terrain) {
